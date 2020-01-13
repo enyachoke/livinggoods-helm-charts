@@ -21,24 +21,43 @@ spec:
       serviceAccountName: {{ include "cht-core.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: horti-data
+          persistentVolumeClaim:
+            claimName: horti-pvc
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: horti-data
+              mountPath: /root
+          env:
+            - name: HORTI_BUILDS_SERVER
+              value: {{ .Values.chtCore.buildsServer }}
+            - name: COUCH_URL
+              valueFrom:
+                  secretKeyRef:
+                    name: {{ .Values.chtCore.secrets }}
+                    key: couchDbUrl
+            - name: MEDIC_VERSION
+              value: {{ .Values.chtCore.chtCoreVersion }}
+            - name: COUCH_NODE_NAME
+              value: {{ .Values.chtCore.couchDbNodeName }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

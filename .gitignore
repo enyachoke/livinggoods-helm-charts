@@ -1,1 +1,4 @@
 custom-couchdb-values.yaml
+custom-chtcore-values.yaml
+cht-core-secrets.yaml
+couchdb-secrets.yaml

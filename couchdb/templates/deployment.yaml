@@ -32,6 +32,17 @@ spec:
       serviceAccountName: {{ include "couchdb.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: change-owner
+          image: alpine:3.6
+          command:
+          - chown
+          - -R  
+          - 1001:1001
+          - /bitnami/couchdb
+          volumeMounts:
+            - name: couchdb-data
+              mountPath: /bitnami/couchdb
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -39,25 +50,29 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: ALLOW_ANONYMOUS_LOGIN
-              value: 'no'
+            - name: COUCHDB_PASSWORD
+              valueFrom:
+                  secretKeyRef:
+                    name: {{ .Values.couchdb.secrets }}
+                    key: adminPassword
             - name: COUCHDB_USER
               value: {{ .Values.couchdb.adminUser }}
-            - name: COUCHDB_PASSWORD
-              value: {{ .Values.couchdb.adminPassword }}
+          volumeMounts:
+          - name: couchdb-data
+            mountPath: /bitnami/couchdb
           ports:
             - name: data
               containerPort: 5984
             - name: admin
               containerPort: 5986
-          livenessProbe:
-            httpGet:
-              path: /
-              port: data
-          readinessProbe:
-            httpGet:
-              path: /
-              port: data
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: data
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: data
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

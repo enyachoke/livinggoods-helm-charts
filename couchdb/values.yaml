@@ -4,8 +4,8 @@
 
 replicaCount: 1
 couchdb:
-  adminUser: "admin"
-  adminPassword: "admin"
+  adminUser: admin
+  secrets: chtcore-secrets
 image:
   repository: bitnami/couchdb
   tag: 2
