@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "couchdb.fullname" . }}
+  labels:
+    {{- include "couchdb.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ include "couchdb.fullname" . }}
+  selector:
+    matchLabels:
+      {{- include "couchdb.selectorLabels" . | nindent 6 }}
+  volumeClaimTemplates:
+      - metadata:
+          name: couchdb-data
+        spec:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 5Gi
+  template:
+    metadata:
+      labels:
+        {{- include "couchdb.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      restartPolicy: Always
+      serviceAccountName: {{ include "couchdb.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: ALLOW_ANONYMOUS_LOGIN
+              value: 'no'
+            - name: COUCHDB_USER
+              value: {{ .Values.couchdb.adminUser }}
+            - name: COUCHDB_PASSWORD
+              value: {{ .Values.couchdb.adminPassword }}
+          ports:
+            - name: data
+              containerPort: 5984
+            - name: admin
+              containerPort: 5986
+          livenessProbe:
+            httpGet:
+              path: /
+              port: data
+          readinessProbe:
+            httpGet:
+              path: /
+              port: data
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
