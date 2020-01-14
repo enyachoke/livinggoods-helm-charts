@@ -7,7 +7,7 @@ replicaCount: 1
 image:
   repository: enyachoke/medic-cli
   tag: 'latest'
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 imagePullSecrets: []
 nameOverride: ""
@@ -15,9 +15,13 @@ fullnameOverride: ""
 
 chtCore:
   buildsServer: https://build-server.lg-apps.com/_couch/builds
-  secrets: chtcore-secrets
+  secrets: couchdb-secrets
   chtCoreVersion: 3.6.1
   couchDbNodeName: couchdb@127.0.0.1
+  couchDbServer: localhost
+  couchDbProtocal: http
+  couchDbUser: admin
+  couchDbPort: 5984
 
 serviceAccount:
   # Specifies whether a service account should be created

@@ -37,11 +37,17 @@ spec:
           env:
             - name: HORTI_BUILDS_SERVER
               value: {{ .Values.chtCore.buildsServer }}
-            - name: COUCH_URL
+            - name: COUCHDB_SERVER
+              value: {{ .Values.chtCore.couchDbServer }}
+            - name: PROTOCAL
+              value: {{ .Values.chtCore.couchDbProtocal }}
+            - name: COUCHDB_PASSWORD
               valueFrom:
                   secretKeyRef:
                     name: {{ .Values.chtCore.secrets }}
-                    key: couchDbUrl
+                    key: adminPassword
+            - name: COUCHDB_USER
+              value: {{ .Values.chtCore.couchDbUser }}
             - name: MEDIC_VERSION
               value: {{ .Values.chtCore.chtCoreVersion }}
             - name: COUCH_NODE_NAME
