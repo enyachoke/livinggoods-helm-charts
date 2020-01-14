@@ -1,0 +1,25 @@
+apiVersion: v1
+entries:
+  cht-core:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2020-01-14T08:24:00.196795+03:00"
+    description: A Helm chart for Kubernetes
+    digest: a7924639ec12d31c95757e3769336418948400d25355ab4813f19c482df6410a
+    name: cht-core
+    type: application
+    urls:
+    - https://livinggoods.github.io/livinggoods-helm-charts/cht-core-0.1.0.tgz
+    version: 0.1.0
+  lg-couchdb:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2020-01-14T08:24:00.197595+03:00"
+    description: A Helm chart for Kubernetes
+    digest: 9cc26a872cd3bae05331c9a636a9c3c10072b6f9c9e4efd3997042766202579e
+    name: lg-couchdb
+    type: application
+    urls:
+    - https://livinggoods.github.io/livinggoods-helm-charts/lg-couchdb-0.1.0.tgz
+    version: 0.1.0
+generated: "2020-01-14T08:24:00.193071+03:00"
